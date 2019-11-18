@@ -1,0 +1,20 @@
+{
+    "name": "lipseys/apiintegration",
+    "description": "Lipseys Api Integration",
+    "type": "library",
+    "license": "MIT",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Lipsey's LLC",
+            "email": "api@lipseys.com"
+        }
+    ],
+    "require": {
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {"lipseys\\ApiIntegration\\": "src/"}
+    }
+}
