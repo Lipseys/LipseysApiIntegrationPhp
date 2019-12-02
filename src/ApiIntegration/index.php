@@ -281,7 +281,9 @@ class LipseysClient
             );
         }
         foreach ($order["Items"] as &$value) {
-            if(!array_key_exists("ItemNo", $value["ItemNo"]) || strlen($value["ItemNo"]) < 1 || !$value["Quantity"] || $value["Quantity"] < 1){
+            if(!array_key_exists("ItemNo", $value) || strlen($value["ItemNo"]) < 1 || !$value["Quantity"] || $value["Quantity"] < 1){
+                print_r($value["Quantity"]);
+
                 return array(
                     "authorized" => true,
                     "success" => false,
