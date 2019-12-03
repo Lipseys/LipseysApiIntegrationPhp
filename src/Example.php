@@ -1,6 +1,5 @@
 <?php
-
-include('src/LipseysClient.php');
+include('ApiIntegration/index.php');
 use lipseys\ApiIntegration\LipseysClient;
 
 

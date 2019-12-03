@@ -1,8 +1,9 @@
 <?php
 
-namespace lipseys\ApiIntegration;
+namespace lipseys\apiintegration;
 
-use Exception;
+
+use http\Url;
 
 class LipseysClient
 {

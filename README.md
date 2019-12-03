@@ -6,7 +6,7 @@ Package install is through composer at
 **Example Implimentation**
 ````
 <?php
-
+include('vendor/lipseys/apiintegration/src/ApiIntegration/index.php');
 use lipseys\apiintegration\LipseysClient;
 
 
