@@ -15,6 +15,6 @@
         "ext-json": "*"
     },
     "autoload": {
-        "psr-4": {"lipseys\\ApiIntegration\\": "src/"}
+        "psr-4": {"lipseys\\ApiIntegration\\": "src"}
     }
 }
