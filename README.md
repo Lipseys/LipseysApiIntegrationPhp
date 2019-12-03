@@ -4,8 +4,15 @@ Package install is through composer at
 
 
 **Example Implimentation**
+
+run in project to setup autoloading
+
+````composer dump-autoload -o````
+
 ````
 <?php
+require_once('vendor/autoload.php');
+
 
 use lipseys\apiintegration\LipseysClient;
 

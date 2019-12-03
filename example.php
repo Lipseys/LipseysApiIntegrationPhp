@@ -1,6 +1,9 @@
 <?php
+//run the following to setup autoloading
+//composer dump-autoload -o
+require_once('vendor/autoload.php'); //only needed if not run anywhere else
 
-include('src/LipseysClient.php');
+
 use lipseys\ApiIntegration\LipseysClient;
 
 
