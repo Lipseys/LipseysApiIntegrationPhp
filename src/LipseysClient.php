@@ -19,6 +19,14 @@ class LipseysClient
         if( !extension_loaded('curl') ){
             throw new Exception("This method requires the php curl extension.");
         }
+        if(session_status() == PHP_SESSION_NONE){
+            session_start();
+        }
+        if(session_status() == PHP_SESSION_ACTIVE){
+            if(array_key_exists("LipseysSessionToken{$email}{$password}", $_SESSION)) {
+                $this->Token = $_SESSION["LipseysSessionToken{$email}{$password}"];
+            }
+        }
 
         $this->Email = $email;
         $this->Password = $password;
@@ -67,29 +75,38 @@ class LipseysClient
         return $curl;
     }
 
-    private function InvalidLoginResponse(){
+    private function InvalidLoginResponse($loginResponse){
+        $errorsArray = array(
+            "Not Authorized Response",
+            "Credentials Provided: {$this->Email}, {$this->Password}",
+            date("Y-m-d h:i:s A T"),
+            $loginResponse
+        );
+        if($this->Token){
+            array_push($errorsArray, "Token: {$this->Token}");
+        }
         return array(
             "authorized" => false,
             "success" => false,
-            "errors" => array(
-                "Error logging in - Check Creds"
-            )
+            "errors" => $errorsArray
         );
     }
-    private function RequestError(){
+    private function RequestError($error){
         return array(
             "authorized" => false,
             "success" => false,
             "errors" => array(
-                "Error making http request"
+                "Error making http request",
+                $error
             )
         );
     }
 
     public function Catalog(){
         if(!$this->Token){
-            if($this->login() != 1){
-                return $this->InvalidLoginResponse();
+            $loginAttemptResult = $this->login();
+            if($loginAttemptResult != 1){
+                return $this->InvalidLoginResponse($loginAttemptResult);
             }
         }
 
@@ -99,12 +116,13 @@ class LipseysClient
         curl_close($curl);
 
         if ($err) {
-            return $this->RequestError();
+            return $this->RequestError($err);
         } else {
             $decode = json_decode($response, true);
             if($decode["authorized"] == false){
-                if($this->login() != 1){
-                    return $this->InvalidLoginResponse();
+                $loginAttemptResult = $this->login();
+                if($loginAttemptResult != 1){
+                    return $this->InvalidLoginResponse($loginAttemptResult);
                 }
 
                 $curl = $this->GetRequestBuilder("integration/items/CatalogFeed");
@@ -114,13 +132,13 @@ class LipseysClient
                 curl_close($curl);
 
                 if ($err) {
-                    return $this->RequestError();
+                    return $this->RequestError($err);
                 } else {
-                    $decode = json_decode($response, true);
-                    if ($decode["authorized"] == false) {
-                        return $this->InvalidLoginResponse();
+                    $decode2 = json_decode($response, true);
+                    if ($decode2["authorized"] == false) {
+                        return $this->InvalidLoginResponse($response);
                     }
-                    return $decode;
+                    return $decode2;
                 }
             }
             return $decode;
@@ -128,8 +146,9 @@ class LipseysClient
     }
     public function CatalogItem($itemNumber){
         if(!$this->Token){
-            if($this->login() != 1){
-                return $this->InvalidLoginResponse();
+            $loginAttemptResult = $this->login();
+            if($loginAttemptResult != 1){
+                return $this->InvalidLoginResponse($loginAttemptResult);
             }
         }
 
@@ -149,12 +168,13 @@ class LipseysClient
         curl_close($curl);
 
         if ($err) {
-            return $this->RequestError();
+            return $this->RequestError($err);
         } else {
             $decode = json_decode($response, true);
             if($decode["authorized"] == false){
-                if($this->login() != 1){
-                    return $this->InvalidLoginResponse();
+                $loginAttemptResult = $this->login();
+                if($loginAttemptResult != 1){
+                    return $this->InvalidLoginResponse($loginAttemptResult);
                 }
 
                 $curl = $this->PostRequestBuilder("integration/items/CatalogFeed/Item", $itemNumber);
@@ -163,13 +183,13 @@ class LipseysClient
                 curl_close($curl);
 
                 if ($err) {
-                    return $this->RequestError();
+                    return $this->RequestError($err);
                 } else {
-                    $decode = json_decode($response, true);
-                    if($decode["authorized"] == false){
-                        return $this->InvalidLoginResponse();
+                    $decode2 = json_decode($response, true);
+                    if($decode2["authorized"] == false){
+                        return $this->InvalidLoginResponse($response);
                     }
-                    return $decode;
+                    return $decode2;
                 }
             }
             return $decode;
@@ -177,8 +197,9 @@ class LipseysClient
     }
     public function PricingAndQuantity(){
         if(!$this->Token){
-            if($this->login() != 1){
-                return $this->InvalidLoginResponse();
+            $loginAttemptResult = $this->login();
+            if($loginAttemptResult != 1){
+                return $this->InvalidLoginResponse($loginAttemptResult);
             }
         }
 
@@ -188,12 +209,13 @@ class LipseysClient
         curl_close($curl);
 
         if ($err) {
-            return $this->RequestError();
+            return $this->RequestError($err);
         } else {
             $decode = json_decode($response, true);
             if($decode["authorized"] == false){
-                if($this->login() != 1){
-                    return $this->InvalidLoginResponse();
+                $loginAttemptResult = $this->login();
+                if($loginAttemptResult != 1){
+                    return $this->InvalidLoginResponse($loginAttemptResult);
                 }
                 $curl = $this->GetRequestBuilder("integration/items/PricingQuantityFeed");
                 $response = curl_exec($curl);
@@ -201,13 +223,13 @@ class LipseysClient
                 curl_close($curl);
 
                 if ($err) {
-                    return $this->RequestError();
+                    return $this->RequestError($err);
                 } else {
-                    $decode = json_decode($response, true);
-                    if($decode["authorized"] == false){
-                        return $this->InvalidLoginResponse();
+                    $decode2 = json_decode($response, true);
+                    if($decode2["authorized"] == false){
+                        return $this->InvalidLoginResponse($response);
                     }
-                    return $decode;
+                    return $decode2;
                 }
             }
             return $decode;
@@ -215,8 +237,9 @@ class LipseysClient
     }
     public function ValidateItem($itemNumber){
         if(!$this->Token){
-            if($this->login() != 1){
-                return $this->InvalidLoginResponse();
+            $loginAttemptResult = $this->login();
+            if($loginAttemptResult != 1){
+                return $this->InvalidLoginResponse($loginAttemptResult);
             }
         }
 
@@ -236,12 +259,13 @@ class LipseysClient
         curl_close($curl);
 
         if ($err) {
-            return $this->RequestError();
+            return $this->RequestError($err);
         } else {
             $decode = json_decode($response, true);
             if($decode["authorized"] == false){
-                if($this->login() != 1){
-                    return $this->InvalidLoginResponse();
+                $loginAttemptResult = $this->login();
+                if($loginAttemptResult != 1){
+                    return $this->InvalidLoginResponse($loginAttemptResult);
                 }
 
                 $curl = $this->PostRequestBuilder("integration/items/validateitem", $itemNumber);
@@ -250,13 +274,13 @@ class LipseysClient
                 curl_close($curl);
 
                 if ($err) {
-                    return $this->RequestError();
+                    return $this->RequestError($err);
                 } else {
-                    $decode = json_decode($response, true);
-                    if($decode["authorized"] == false){
-                        return $this->InvalidLoginResponse();
+                    $decode2 = json_decode($response, true);
+                    if($decode2["authorized"] == false){
+                        return $this->InvalidLoginResponse($response);
                     }
-                    return $decode;
+                    return $decode2;
                 }
             }
             return $decode;
@@ -265,8 +289,9 @@ class LipseysClient
 
     public function Order($order){
         if(!$this->Token){
-            if($this->login() != 1){
-                return $this->InvalidLoginResponse();
+            $loginAttemptResult = $this->login();
+            if($loginAttemptResult != 1){
+                return $this->InvalidLoginResponse($loginAttemptResult);
             }
         }
 
@@ -275,7 +300,7 @@ class LipseysClient
                 "authorized" => true,
                 "success" => false,
                 "errors" => array(
-                    "No Items Provided"
+                    "Field Missing: \"Items\""
                 )
             );
         }
@@ -299,12 +324,13 @@ class LipseysClient
         curl_close($curl);
 
         if ($err) {
-            return $this->RequestError();
+            return $this->RequestError($err);
         } else {
             $decode = json_decode($response, true);
             if($decode["authorized"] == false){
-                if($this->login() != 1){
-                    return $this->InvalidLoginResponse();
+                $loginAttemptResult = $this->login();
+                if($loginAttemptResult != 1){
+                    return $this->InvalidLoginResponse($loginAttemptResult);
                 }
 
                 $curl = $this->PostRequestBuilder("integration/order/apiorder", $order);
@@ -313,13 +339,13 @@ class LipseysClient
                 curl_close($curl);
 
                 if ($err) {
-                    return $this->RequestError();
+                    return $this->RequestError($err);
                 } else {
-                    $decode = json_decode($response, true);
-                    if($decode["authorized"] == false){
-                        return $this->InvalidLoginResponse();
+                    $decode2 = json_decode($response, true);
+                    if($decode2["authorized"] == false){
+                        return $this->InvalidLoginResponse($response);
                     }
-                    return $decode;
+                    return $decode2;
                 }
             }
             return $decode;
@@ -327,17 +353,157 @@ class LipseysClient
     }
     public function DropShipAccessories($order){
         if(!$this->Token){
-            if($this->login() != 1){
-                return $this->InvalidLoginResponse();
+            $loginAttemptResult = $this->login();
+            if($loginAttemptResult != 1){
+                return $this->InvalidLoginResponse($loginAttemptResult);
             }
         }
+
+
+        if(!$order || !array_key_exists("BillingName", $order) || count($order["BillingName"]) < 1){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "Field Missing: \"BillingName\""
+                )
+            );
+        }
+        if(!$order || !array_key_exists("BillingAddressLine1", $order) || count($order["BillingAddressLine1"]) < 1){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "Field Missing: \"BillingAddressLine1\""
+                )
+            );
+        }
+        if(!$order || !array_key_exists("BillingAddressCity", $order) || count($order["BillingAddressCity"]) < 1){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "Field Missing: \"BillingAddressCity\""
+                )
+            );
+        }
+        if(!$order || !array_key_exists("BillingAddressState", $order) || count($order["BillingAddressState"]) < 1){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "Field Missing: \"BillingAddressState\""
+                )
+            );
+        }
+        if(strlen($order->BillingAddressState) != 5){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "BillingAddressState Should be 2 Letters"
+                )
+            );
+        }
+        if(!$order || !array_key_exists("BillingAddressZip", $order) || count($order["BillingAddressZip"]) < 1){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "Field Missing: \"BillingAddressZip\""
+                )
+            );
+        }
+        if(strlen($order->BillingAddressZip) != 5){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "BillingAddressZip Should be 5 Numbers"
+                )
+            );
+        }
+        if(!$order || !array_key_exists("ShippingName", $order) || count($order["ShippingName"]) < 1){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "Field Missing: \"ShippingName\""
+                )
+            );
+        }
+        if(!$order || !array_key_exists("ShippingAddressLine1", $order) || count($order["ShippingAddressLine1"]) < 1){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "Field Missing: \"ShippingAddressLine1\""
+                )
+            );
+        }
+        if(!$order || !array_key_exists("ShippingAddressCity", $order) || count($order["ShippingAddressCity"]) < 1){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "Field Missing: \"ShippingAddressCity\""
+                )
+            );
+        }
+        if(!$order || !array_key_exists("ShippingAddressState", $order) || count($order["ShippingAddressState"]) < 1){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "Field Missing: \"ShippingAddressState\""
+                )
+            );
+        }
+        if(strlen($order->ShippingAddressState) != 5){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "ShippingAddressState Should be 2 Letters"
+                )
+            );
+        }
+        if(!$order || !array_key_exists("ShippingAddressZip", $order) || count($order["ShippingAddressZip"]) < 1){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "Field Missing: \"ShippingAddressZip\""
+                )
+            );
+        }
+        if(strlen($order->ShippingAddressZip) != 5){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "ShippingAddressZip Should be 5 Numbers"
+                )
+            );
+        }
+        if(!$order || !array_key_exists("PoNumber", $order) || count($order["PoNumber"]) < 1){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "Field Missing: \"PoNumber\""
+                )
+            );
+        }
+
+
 
         if(!$order || !array_key_exists("Items", $order) || count($order["Items"]) < 1){
             return array(
                 "authorized" => true,
                 "success" => false,
                 "errors" => array(
-                    "No Items Provided"
+                    "Field Missing: \"Items\""
                 )
             );
         }
@@ -360,12 +526,13 @@ class LipseysClient
         curl_close($curl);
 
         if ($err) {
-            return $this->RequestError();
+            return $this->RequestError($err);
         } else {
             $decode = json_decode($response, true);
             if($decode["authorized"] == false){
-                if($this->login() != 1){
-                    return $this->InvalidLoginResponse();
+                $loginAttemptResult = $this->login();
+                if($loginAttemptResult != 1){
+                    return $this->InvalidLoginResponse($loginAttemptResult);
                 }
 
                 $curl = $this->PostRequestBuilder("integration/order/dropship", $order);
@@ -374,23 +541,25 @@ class LipseysClient
                 curl_close($curl);
 
                 if ($err) {
-                    return $this->RequestError();
+                    return $this->RequestError($err);
                 } else {
-                    $decode = json_decode($response, true);
-                    if($decode["authorized"] == false){
-                        return $this->InvalidLoginResponse();
+                    $decode2 = json_decode($response, true);
+                    if($decode2["authorized"] == false){
+                        return $this->InvalidLoginResponse($response);
                     }
-                    return $decode;
+                    return $decode2;
                 }
             }
             return $decode;
         }
     }
 
+
     public function OneDaysShipping($date){
         if(!$this->Token){
-            if($this->login() != 1){
-                return $this->InvalidLoginResponse();
+            $loginAttemptResult = $this->login();
+            if($loginAttemptResult != 1){
+                return $this->InvalidLoginResponse($loginAttemptResult);
             }
         }
 
@@ -410,12 +579,13 @@ class LipseysClient
         curl_close($curl);
 
         if ($err) {
-            return $this->RequestError();
+            return $this->RequestError($err);
         } else {
             $decode = json_decode($response, true);
             if($decode["authorized"] == false){
-                if($this->login() != 1){
-                    return $this->InvalidLoginResponse();
+                $loginAttemptResult = $this->login();
+                if($loginAttemptResult != 1){
+                    return $this->InvalidLoginResponse($loginAttemptResult);
                 }
 
                 $curl = $this->PostRequestBuilder("integration/shipping/oneday", $date);
@@ -424,13 +594,13 @@ class LipseysClient
                 curl_close($curl);
 
                 if ($err) {
-                    return $this->RequestError();
+                    return $this->RequestError($err);
                 } else {
-                    $decode = json_decode($response, true);
-                    if($decode["authorized"] == false){
-                        return $this->InvalidLoginResponse();
+                    $decode2 = json_decode($response, true);
+                    if($decode2["authorized"] == false){
+                        return $this->InvalidLoginResponse($response);
                     }
-                    return $decode;
+                    return $decode2;
                 }
             }
             return $decode;
@@ -448,15 +618,18 @@ class LipseysClient
         curl_close($curl);
 
         if ($err) {
-            return 0;
+            return $err;
         } else {
             $decode = json_decode($response, true);
             if(array_key_exists("token", $decode) && array_key_exists("econtact", $decode) && $decode["econtact"]["success"] == 1){
                 $this->Account = $decode;
                 $this->Token = $decode["token"];
+                if(session_status() == PHP_SESSION_ACTIVE){
+                    $_SESSION["LipseysSessionToken{$this->Email}{$this->Password}"] = $decode["token"];
+                }
                 return 1;
             }
         }
-        return 0;
+        return $response;
     }
 }
