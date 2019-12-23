@@ -11,55 +11,62 @@ run in project to setup autoloading
 
 ````
 <?php
-require_once('vendor/autoload.php');
+//run the following to setup autoloading
+//composer dump-autoload -o
+require_once('vendor/autoload.php'); //only needed if not run anywhere else
 
 
-use lipseys\apiintegration\LipseysClient;
+use lipseys\ApiIntegration\LipseysClient;
 
 
-$client = new LipseysClient("username@email.com", "password");
+$client = new LipseysClient("email@email.com", "password");
 
 
 //print_r($client->Catalog());
+
 //print_r($client->CatalogItem("RU1022RB"));
+
 //print_r($client->PricingAndQuantity());
+
 //print_r($client->ValidateItem("RU1022RB"));
+
 /*print_r($client->Order(array(
-    "PONumber" => "Po Number",
+    "PoNumber" => "Po Number", //Required
     "EmailConfirmation" => true,
-    "Items" => array(
+    "Items" => array( //Required: at least one item
         array(
-            "ItemNo" => "RULCP",
-            "Quantity" => 1,
+            "ItemNo" => "RULCP", //Required
+            "Quantity" => 1, //Required: at least 1
             "Note" => "note"
         )
     )
 )));*/
+
 /*print_r($client->DropShipAccessories(array(
-    "Warehouse" => "",
-    "PONumber" => "Po Number",
-    "BillingName" => "Billing Name",
-    "BillingAddressLine1" => "1234 Street Dr.",
+    "PoNumber" => "Po Number", //Required
+    "BillingName" => "Billing Name", //Required
+    "BillingAddressLine1" => "1234 Street Dr.", //Required
     "BillingAddressLine2" => "Room 3",
-    "BillingAddressCity" => "Baton Rouge",
-    "BillingAddressState" => "LA",
-    "BillingAddressZip" => "70403",
-    "ShippingName" => "Shipping Name",
-    "ShippingAddressLine1" => "5678 Other st",
+    "BillingAddressCity" => "Baton Rouge", //Required
+    "BillingAddressState" => "LA", //Required
+    "BillingAddressZip" => "70403", //Required
+    "ShippingName" => "Shipping Name", //Required
+    "ShippingAddressLine1" => "5678 Other st", //Required
 	"ShippingAddressLine2" => "floor 2",
-	"ShippingAddressCity" => "Metarie",
-	"ShippingAddressState" => "LA",
-	"ShippingAddressZip" => "70001",
-	"MessageForSalesExec" => "Thanks",
+	"ShippingAddressCity" => "Metarie", //Required
+	"ShippingAddressState" => "LA", //Required
+	"ShippingAddressZip" => "70001", //Required
+	"MessageForSalesExec" => "Thanks", //Required
     "Overnight" => false,
-    "Items" => array(
+    "Items" => array( //Required: at least one item
         array(
-            "ItemNo" => "RULCP",
-            "Quantity" => 1,
+            "ItemNo" => "RULCP", //Required
+            "Quantity" => 1, //Required: at least 1
             "Note" => "note"
         )
     )
 )));*/
+__
 
 $date = new DateTime();
 $date->modify('-5 day');
