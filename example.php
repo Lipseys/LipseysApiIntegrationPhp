@@ -7,7 +7,7 @@ require_once('vendor/autoload.php'); //only needed if not run anywhere else
 use lipseys\ApiIntegration\LipseysClient;
 
 
-$client = new LipseysClient("username@email.com", "password");
+$client = new LipseysClient("username", "password");
 
 
 //print_r($client->Catalog());
@@ -17,6 +17,7 @@ $client = new LipseysClient("username@email.com", "password");
 /*print_r($client->Order(array(
     "PONumber" => "Po Number",
     "EmailConfirmation" => true,
+    "DisableEmail" => true,
     "Items" => array(
         array(
             "ItemNo" => "RULCP",
@@ -25,26 +26,43 @@ $client = new LipseysClient("username@email.com", "password");
         )
     )
 )));*/
-/*print_r($client->DropShipAccessories(array(
-    "Warehouse" => "",
-    "PONumber" => "Po Number",
-    "BillingName" => "Billing Name",
-    "BillingAddressLine1" => "1234 Street Dr.",
-    "BillingAddressLine2" => "Room 3",
-    "BillingAddressCity" => "Baton Rouge",
+/*
+print_r($client->DropShipAccessories(array(
+    "PoNumber" => "PoNumber",
+    "BillingName" => "BillingName",
+    "BillingAddressLine1" => "BillingAddressLine1",
+    "BillingAddressLine2" => "BillingAddressLine2",
+    "BillingAddressCity" => "BillingAddressCity",
     "BillingAddressState" => "LA",
-    "BillingAddressZip" => "70403",
-    "ShippingName" => "Shipping Name",
-    "ShippingAddressLine1" => "5678 Other st",
-	"ShippingAddressLine2" => "floor 2",
-	"ShippingAddressCity" => "Metarie",
+    "BillingAddressZip" => "70764",
+    "ShippingName" => "ShippingName",
+    "ShippingAddressLine1" => "ShippingAddressLine1",
+	"ShippingAddressLine2" => "ShippingAddressLine2",
+	"ShippingAddressCity" => "Baton Rouge",
 	"ShippingAddressState" => "LA",
-	"ShippingAddressZip" => "70001",
+	"ShippingAddressZip" => "70764",
 	"MessageForSalesExec" => "Thanks",
+    "DisableEmail" => true,
     "Overnight" => false,
     "Items" => array(
         array(
-            "ItemNo" => "RULCP",
+            "ItemNo" => "LP171714",
+            "Quantity" => 1,
+            "Note" => ""
+        )
+    )
+)));*/
+
+/*print_r($client->DropShipFirearms(array(
+    "Ffl" => "123123123123123",
+    "Name" => "Po Number",
+    "Po" => "Billing Name",
+    "Phone" => "1234 Street Dr.",
+    "DelayShipping" => false,
+    "DisableEmail" => true,
+    "Items" => array(
+        array(
+            "ItemNo" => "RU1022RB",
             "Quantity" => 1,
             "Note" => "note"
         )
