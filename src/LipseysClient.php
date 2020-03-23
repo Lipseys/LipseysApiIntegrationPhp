@@ -569,7 +569,7 @@ class LipseysClient
         }
     }
     public function DropShipFirearms($order){
-        if(!$this["Token"]){
+        if(!$this->Token){
             $loginAttemptResult = $this->login();
             if($loginAttemptResult != 1){
                 return $this->InvalidLoginResponse($loginAttemptResult);
