@@ -235,6 +235,46 @@ class LipseysClient
             return $decode;
         }
     }
+    public function AllocationPricingAndQuantity(){
+        if(!$this->Token){
+            $loginAttemptResult = $this->login();
+            if($loginAttemptResult != 1){
+                return $this->InvalidLoginResponse($loginAttemptResult);
+            }
+        }
+
+        $curl = $this->GetRequestBuilder("integration/items/Allocations");
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+
+        if ($err) {
+            return $this->RequestError($err);
+        } else {
+            $decode = json_decode($response, true);
+            if($decode["authorized"] == false){
+                $loginAttemptResult = $this->login();
+                if($loginAttemptResult != 1){
+                    return $this->InvalidLoginResponse($loginAttemptResult);
+                }
+                $curl = $this->GetRequestBuilder("integration/items/Allocations");
+                $response = curl_exec($curl);
+                $err = curl_error($curl);
+                curl_close($curl);
+
+                if ($err) {
+                    return $this->RequestError($err);
+                } else {
+                    $decode2 = json_decode($response, true);
+                    if($decode2["authorized"] == false){
+                        return $this->InvalidLoginResponse($response);
+                    }
+                    return $decode2;
+                }
+            }
+            return $decode;
+        }
+    }
     public function ValidateItem($itemNumber){
         if(!$this->Token){
             $loginAttemptResult = $this->login();
@@ -334,6 +374,70 @@ class LipseysClient
                 }
 
                 $curl = $this->PostRequestBuilder("integration/order/apiorder", $order);
+                $response = curl_exec($curl);
+                $err = curl_error($curl);
+                curl_close($curl);
+
+                if ($err) {
+                    return $this->RequestError($err);
+                } else {
+                    $decode2 = json_decode($response, true);
+                    if($decode2["authorized"] == false){
+                        return $this->InvalidLoginResponse($response);
+                    }
+                    return $decode2;
+                }
+            }
+            return $decode;
+        }
+    }
+    public function AllocationOrder($order){
+        if(!$this->Token){
+            $loginAttemptResult = $this->login();
+            if($loginAttemptResult != 1){
+                return $this->InvalidLoginResponse($loginAttemptResult);
+            }
+        }
+
+        if(!$order || !array_key_exists("Items", $order) || count($order["Items"]) < 1){
+            return array(
+                "authorized" => true,
+                "success" => false,
+                "errors" => array(
+                    "Field Missing: \"Items\""
+                )
+            );
+        }
+        foreach ($order["Items"] as &$value) {
+            if(!array_key_exists("ItemNo", $value) || strlen($value["ItemNo"]) < 1 || !$value["Quantity"] || $value["Quantity"] < 1){
+                print_r($value["Quantity"]);
+
+                return array(
+                    "authorized" => true,
+                    "success" => false,
+                    "errors" => array(
+                        "One or more line item was missing item number or had less than 1 quantity"
+                    )
+                );
+            }
+        }
+
+        $curl = $this->PostRequestBuilder("integration/order/AllocationOrder", $order);
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+
+        if ($err) {
+            return $this->RequestError($err);
+        } else {
+            $decode = json_decode($response, true);
+            if($decode["authorized"] == false){
+                $loginAttemptResult = $this->login();
+                if($loginAttemptResult != 1){
+                    return $this->InvalidLoginResponse($loginAttemptResult);
+                }
+
+                $curl = $this->PostRequestBuilder("integration/order/AllocationOrder", $order);
                 $response = curl_exec($curl);
                 $err = curl_error($curl);
                 curl_close($curl);

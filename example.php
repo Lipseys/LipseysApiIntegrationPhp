@@ -13,8 +13,21 @@ $client = new LipseysClient("username", "password");
 //print_r($client->Catalog());
 //print_r($client->CatalogItem("RU1022RB"));
 //print_r($client->PricingAndQuantity());
+//print_r($client->AllocationPricingAndQuantity());
 //print_r($client->ValidateItem("RU1022RB"));
 /*print_r($client->Order(array(
+    "PONumber" => "Po Number",
+    "EmailConfirmation" => true,
+    "DisableEmail" => true,
+    "Items" => array(
+        array(
+            "ItemNo" => "RULCP",
+            "Quantity" => 1,
+            "Note" => "note"
+        )
+    )
+)));*/
+/*print_r($client->AllocationOrder(array(
     "PONumber" => "Po Number",
     "EmailConfirmation" => true,
     "DisableEmail" => true,
