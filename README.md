@@ -81,7 +81,22 @@ $client = new LipseysClient("email@email.com", "password");
         )
     )
 )));*/
-__
+
+/*print_r($client->DropShipFirearms(array(
+    "Ffl" => "123123123123123",
+    "Name" => "Po Number",
+    "Po" => "Billing Name",
+    "Phone" => "1234 Street Dr.",
+    "DelayShipping" => false,
+    "DisableEmail" => true,
+    "Items" => array(
+        array(
+            "ItemNo" => "RU1022RB",
+            "Quantity" => 1,
+            "Note" => "note"
+        )
+    )
+)));*/
 
 $date = new DateTime();
 $date->modify('-5 day');
