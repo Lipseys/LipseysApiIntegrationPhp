@@ -7,7 +7,7 @@ require_once('vendor/autoload.php'); //only needed if not run anywhere else
 use lipseys\ApiIntegration\LipseysClient;
 
 
-$client = new LipseysClient("username", "password");
+$client = new LipseysClient("email", "password");
 
 
 //print_r($client->Catalog());
@@ -16,6 +16,18 @@ $client = new LipseysClient("username", "password");
 //print_r($client->AllocationPricingAndQuantity());
 //print_r($client->ValidateItem("RU1022RB"));
 /*print_r($client->Order(array(
+    "PoNumber" => "Po Number",
+    "EmailConfirmation" => true,
+    "DisableEmail" => true,
+    "Items" => array(
+        array(
+            "ItemNo" => "HERR22MBS6",
+            "Quantity" => 1,
+            "Note" => "note"
+        )
+    )
+));*/
+/*print_r($client->AllocationOrder(array(
     "PONumber" => "Po Number",
     "EmailConfirmation" => true,
     "DisableEmail" => true,
@@ -68,9 +80,9 @@ print_r($client->DropShipAccessories(array(
 
 /*print_r($client->DropShipFirearms(array(
     "Ffl" => "123123123123123",
-    "Name" => "Po Number",
-    "Po" => "Billing Name",
-    "Phone" => "1234 Street Dr.",
+    "Name" => "Name",
+    "PoNumber" => "Po Number",
+    "Phone" => "1231231234",
     "DelayShipping" => false,
     "DisableEmail" => true,
     "Items" => array(
