@@ -9,7 +9,6 @@ use lipseys\ApiIntegration\LipseysClient;
 
 $client = new LipseysClient("email", "password");
 
-
 //print_r($client->Catalog());
 //print_r($client->CatalogItem("RU1022RB"));
 //print_r($client->PricingAndQuantity());
